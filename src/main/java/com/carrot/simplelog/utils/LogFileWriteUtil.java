@@ -326,7 +326,8 @@ public class LogFileWriteUtil {
 		}
 		StringBuffer stringbuffer = new WeakReference<>(
 				new StringBuffer()).get();
-		stringbuffer.append("[" + stackTraceElements[i + 1].getClassName() + "] ");
+		stringbuffer.append("[").append( stackTraceElements[i + 1].getClassName());
+		stringbuffer.append(": ").append(stackTraceElements[i + 1].getLineNumber()).append("] ");
 		stringbuffer.append(str);
 		stringbuffer.append("\r\n");
 		return stringbuffer.toString();

@@ -1,7 +1,7 @@
 package com.carrot.simplelog.model;
 
 /**
- * @author hukai
+ * @author carrot
  * @date 2020/9/4 11:24
  */
 public class CarrotLogRule {
