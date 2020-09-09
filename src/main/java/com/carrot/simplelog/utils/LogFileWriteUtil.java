@@ -10,8 +10,9 @@ import java.io.PrintStream;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,7 +35,6 @@ public class LogFileWriteUtil {
 	private static int writeFileLevel = LogLevel.INFO.value();
 	private static int maxExceptionStackDepth = 20;
 	private static String logFilePrefix = "";
-	private static boolean restart = true;
 
 	static {
 		String localCharset = EnvironmentUtil.getLocalCharset();
@@ -61,22 +61,27 @@ public class LogFileWriteUtil {
 			String datetmp = dateTimeFormat.format(t2);
 			tempPath = tempPath + File.separator + dateTimeFormat.format(t2);
 			String fileName = String.format("%s/%s", tempPath, logFilePrefix);
-			File directoryFile = new File(tempPath);
-			if (!directoryFile.exists()) {
-				directoryFile.mkdirs();
-			}
-			File file = new File(directoryFile, logFilePrefix);
-			if (!file.exists()) {
+			if(!Paths.get(tempPath).toFile().exists()){
 				try {
-					file.createNewFile();
-					restart = false;
-					bCreateNew = true;
+					//文件夹不存在就创建目录
+					Files.createDirectories(Paths.get(tempPath));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+			//判断日志文件是否存在
+			Path p = Paths.get(fileName);
+			if (!p.toFile().exists()) {
+				try {
+					Files.createFile(p);
+					bCreateNew=true;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-			if (!bCreateNew && !restart) {
-				restart = false;
+
+			if (!bCreateNew && logFileChannel!=null) {
 				return true;
 			}
 			if (logFileChannel != null) {
@@ -86,7 +91,6 @@ public class LogFileWriteUtil {
 
 				}
 			}
-			Path p = FileSystems.getDefault().getPath(fileName);
 			try {
 				logFileChannel = FileChannel.open(p,
 						StandardOpenOption.APPEND,
