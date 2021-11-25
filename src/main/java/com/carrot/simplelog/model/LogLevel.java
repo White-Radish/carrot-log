@@ -7,7 +7,8 @@ public enum LogLevel {
 	ERROR(4),
 	FATAL(5),
 	TEST(6),
-	TEST2(7)
+	TEST2(7),
+	TEST3(8)
 	;
 	int levelValue;
 
